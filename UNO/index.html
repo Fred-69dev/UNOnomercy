@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uno No Mercy</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+    <script src="uno.js" defer></script>
+</head>
+<body>
+    <section class="game-container">
+        <h1>Uno No Mercy</h1>
+        <div id="discard-pile">
+
+        </div>
+        <div id="current-player">
+
+        </div>
+        <div id="player-hand">
+
+        </div>
+        <div id="game-log" class="log">
+
+        </div>
+        <div class="game-controls">
+            <button id="draw-button">Piocher une carte</button>
+            <button id="uno-button">Dire UNO!</button>
+        </div>
+            <!-- Modal pour le choix de couleur -->
+    <!-- <div id="color-modal" class="modal">
+        <div class="modal-content">
+            <h2>Choisissez une couleur</h2>
+            <div class="color-choices">
+                <button class="color-btn red" data-color="red">Rouge</button>
+                <button class="color-btn blue" data-color="blue">Bleu</button>
+                <button class="color-btn green" data-color="green">Vert</button>
+                <button class="color-btn yellow" data-color="yellow">Jaune</button>
+            </div>
+        </div>
+    </div> -->
+
+        <div id="player-swap-modal" class="modal">
+            <div class="modal-content">
+                <h2>Choisissez un joueur pour échanger vos cartes</h2>
+                <div id="player-choices" class="player-choices">
+                <!-- Les choix de joueurs seront injectés ici -->
+                </div>
+            </div>
+        </div>
+    
+        <div id="color-choice-modal" class="modal">
+            <div class="modal-content">
+                <h2>Choisissez une couleur</h2>
+                <div class="color-buttons">
+                    <button class="color-btn red" data-color="red">Rouge</button>
+                    <button class="color-btn blue" data-color="blue">Bleu</button>
+                    <button class="color-btn green" data-color="green">Vert</button>
+                    <button class="color-btn yellow" data-color="yellow">Jaune</button>
+                </div>
+            </div>
+        </div>
+        
+    </section>
+</body>
+</html>
