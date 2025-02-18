@@ -1,5 +1,5 @@
 // uno.js
-const playerNames = ["Alice", "Bob", "Charlie"];
+const playerNames = ["Ben", "Alex", "Fred"];
 const game = new UnoGame(playerNames);
 game.start();
 
@@ -18,7 +18,7 @@ function showPlayerSwapModal(callback) {
         modal.style.display = "none";
         callback(index);
       };
-      choices.appendChild(button);
+      choices.append(button);
     }
   });
 
@@ -59,7 +59,7 @@ function handleCardClick(card, index) {
     if (game.playTurn(index)) {
       updateUI();
       // Ajouter un message dans le log
-      const gameLogElement = document.getElementById("game-log");
+      const gameLogElement = document.querySelector("#game-log");
       gameLogElement.innerHTML += `<br>${
         game.players[
           (game.currentPlayerIndex + game.players.length - 1) %
@@ -76,14 +76,14 @@ function handleCardClick(card, index) {
 function showDrawnCards(drawnCards, callback) {
     const drawnCardsDisplay = document.createElement('div');
     drawnCardsDisplay.className = 'drawn-cards-display';
-    document.body.appendChild(drawnCardsDisplay);
+    document.body.append(drawnCardsDisplay);
 
     drawnCards.forEach((card, index) => {
         setTimeout(() => {
             const cardElement = document.createElement('div');
             cardElement.className = 'card drawn-card';
             cardElement.textContent = `${card.color} ${card.value}`;
-            drawnCardsDisplay.appendChild(cardElement);
+            drawnCardsDisplay.append(cardElement);
 
             if (index === drawnCards.length - 1) {
                 setTimeout(() => {
