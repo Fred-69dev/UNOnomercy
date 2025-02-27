@@ -6,6 +6,7 @@ export class Card {
     }
     isPlayable(topCard) {
       // Règles de base pour jouer une carte
+      // TODO: si carte +2 ajouter sum= topCard + card >= topCard
       if (this.color === "black") return true; // Les cartes noires peuvent toujours être jouées
       if (this.color === topCard.color || this.value === topCard.value)
         return true; // Même couleur ou meme valeur
