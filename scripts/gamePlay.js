@@ -1,38 +1,8 @@
-
-function isPlayable(topCard) {
-  // Règles de base pour jouer une carte
-  if (this.color === "black") return true; // Les cartes noires peuvent toujours être jouées
-  if (this.color === topCard.color || this.value === topCard.value)
-    return true; // Même couleur ou meme valeur
-  return false;
-};
-
-
-
-  // Mélange les cartes du paquet
-  function shuffle() {
-    for (let i = this.cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-    }
-  }
-
-  // Pioche un nombre spécifié de cartes du paquet
-  function draw(amount = 1) {
-    if (this.cards.length < amount) {
-      return [];
-    }
-    return this.cards.splice(0, amount);
-  }
-
-  // Méthode pour compter le nombre total de cartes
- function countCards() {
-    return this.cards.length;
-  };
-
+// Importer les classes depuis cards.js
+import { Card, Deck, mainDeck } from './cards.js';
 
 /*La classe Player pour un joueur, contient un nom et une main. */
-class Player {
+export class Player {
   constructor(name) {
     this.name = name;
     this.hand = [];
@@ -62,8 +32,11 @@ class Player {
 
 /*La classe UnoGame, classe principale qui gère le déroulement du jeu, contient le paquet de cartes,
  la pile de défausse, les joueurs, et les méthodes pour démarrer le jeu, jouer un tour, et gérer les cartes spéciales.*/
-class UnoGame {
-  constructor(playerNames) {
+export class UnoGame {
+  constructor(playerNames = []) {
+    if (!Array.isArray(playerNames)) {
+      throw new Error("playerNames doit être un tableau de noms de joueurs.");
+    }
     this.deck = new Deck();
     this.discardPile = [];
     this.players = playerNames.map((name) => new Player(name));
@@ -243,61 +216,45 @@ class UnoGame {
     this.deck = new Deck();
     this.discardPile = [];
     this.start();
-  
- console.log('Passage au joueur suivant...');
-                this.nextPlayer();
-                const currentPlayer = this.getCurrentPlayer();
-
-                // Pioche des cartes jusqu'à trouver la bonne couleur
-                const drawnCards = [];
-                let foundColorCard = false;
-
-                while (!foundColorCard && this.deck.cards.length > 0) {
-                    const card = this.deck.draw(1)[0];
-                    drawnCards.push(card);
-
-                    if (card.color === chosenColor) {
-                        foundColorCard = true;
-                    }
-                }
-            }
- handleChoixCouleur() {
+    console.log('Passage au joueur suivant...');
+    this.nextPlayer();
+  }
+  handleChoixCouleur() {
     return new Promise((resolve) => {
-        const modal = document.querySelector('#color-choice-modal');
-        console.log(modal);
+      const modal = document.querySelector('#color-choice-modal');
+      if (modal) {
         modal.style.display = 'block';
-
+  
         const buttons = modal.querySelectorAll('.color-btn');
         buttons.forEach(button => {
-            button.onclick = () => {
-                const chosenColor = button.dataset.color;
-                modal.style.display = 'none';
-                
-// Définir la couleur actuelle du jeu
-this.currentColor = chosenColor;
- // Mise à jour de l'interface pour afficher la nouvelle couleur
- const colorIndicator = document.querySelector('#current-color');
- if (colorIndicator) {
-     colorIndicator.textContent = `Couleur actuelle: ${chosenColor}`;
-     colorIndicator.style.backgroundColor = chosenColor;
- }
-
-                // Ajoute toutes les cartes piochées à la main du joueur
-                const currentPlayer = this.getCurrentPlayer();
-                currentPlayer.drawCards(drawnCards);
-                
-                // Mettre à jour le log
-                const gameLogElement = document.querySelector('#game-log');
-                gameLogElement.innerHTML += `<br>${currentPlayer.name} pioche ${drawnCards.length} cartes pour trouver du ${chosenColor}`;
-                
-                 // Passage au joueur suivant
-    this.nextPlayer();
-    console.log('Passage au joueur suivant après la pioche');
-
-                resolve();
-                updateUI();
-            };
+          button.onclick = () => {
+            const chosenColor = button.dataset.color;
+            modal.style.display = 'none';
+            this.currentColor = chosenColor;
+  
+            const colorIndicator = document.querySelector('#current-color');
+            if (colorIndicator) {
+              colorIndicator.textContent = `Couleur actuelle: ${chosenColor}`;
+              colorIndicator.style.backgroundColor = chosenColor;
+            }
+  
+            this.nextPlayer();
+            const gameLogElement = document.querySelector('#game-log');
+            if (gameLogElement) {
+              gameLogElement.innerHTML += `<br>${this.players[this.currentPlayerIndex].name} a choisi la couleur ${chosenColor}`;
+            }
+            resolve();
+            if (typeof updateUI === 'function') {
+              updateUI();
+            }
+          };
         });
+      } else {
+        console.error("Modal de choix de couleur non trouvé");
+        resolve();
+      }
     });
+  }
 }
-}
+// Créer une instance par défaut du deck si nécessaire
+export const game = new UnoGame();

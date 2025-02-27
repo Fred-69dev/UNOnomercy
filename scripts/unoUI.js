@@ -1,7 +1,14 @@
-// uno.js
+// Importer les classes depuis les autres fichiers
+import { Card, Deck } from './cards.js';
+import { UnoGame, Player } from './gamePlay.js';
 const playerNames = ["Ben", "Alex", "Fred"];
 const game = new UnoGame(playerNames);
 game.start();
+
+showPlayerSwapModal((targetPlayerIndex) => {
+  performCardSwap(targetPlayerIndex)});
+// uno.js
+
 
 // Fonction pour afficher la modale de sélection de joueur
 function showPlayerSwapModal(callback) {
@@ -43,22 +50,25 @@ function performCardSwap(targetPlayerIndex) {
 
 // Fonction de gestion du clic sur une carte
 function handleCardClick(card, index) {
-    if (card.value === 'ChoixCouleur') {
-        if (game.playTurn(index)) {
-            game.handleChoixCouleur().then(() => {
-                updateUI();
-            });
-        }
-    } else if (card.value === '7') {
+  if (card.value === 'ChoixCouleur') {
     if (game.playTurn(index)) {
-      showPlayerSwapModal((targetPlayerIndex) => {
-        performCardSwap(targetPlayerIndex);
+      game.handleChoixCouleur().then(() => {
+        updateUI();
       });
+    }
+  } else if (card.value === '7') {
+    if (game.playTurn(index)) {
+      const result = game.handleSevenCard();
+      if (result === "CHOOSE_PLAYER_FOR_SWAP") {
+        showPlayerSwapModal((targetPlayerIndex) => {
+          performCardSwap(targetPlayerIndex);
+        });
+      }
+      updateUI();
     }
   } else {
     if (game.playTurn(index)) {
       updateUI();
-      // Ajouter un message dans le log
       const gameLogElement = document.getElementById("game-log");
       gameLogElement.innerHTML += `<br>${
         game.players[
@@ -71,7 +81,6 @@ function handleCardClick(card, index) {
     }
   }
 }
-
 // animation pour montrer les cartes piochées
 function showDrawnCards(drawnCards, callback) {
     const drawnCardsDisplay = document.createElement('div');

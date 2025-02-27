@@ -1,14 +1,21 @@
 /*classe Card carte Uno, deux propriétés : color et value .*/
-class Card {
+export class Card {
     constructor(color, value) {
       this.color = color; // 'red', 'blue', 'green', 'yellow'
       this.value = value; // 0-9, +2, ...
+    }
+    isPlayable(topCard) {
+      // Règles de base pour jouer une carte
+      if (this.color === "black") return true; // Les cartes noires peuvent toujours être jouées
+      if (this.color === topCard.color || this.value === topCard.value)
+        return true; // Même couleur ou meme valeur
+      return false;
     }
   };
 
   /*La classe Deck contient un tableau de cartes et des méthodes pour initialiser le paquet,
  mélanger les cartes, et piocher des cartes. */
-class Deck {
+export class Deck {
     constructor() {
       this.cards = [];
       this.initializeDeck();
@@ -63,7 +70,7 @@ class Deck {
       // Ajout des cartes d'action colorées
       colors.forEach((color) => {
         Object.entries(cardConfig.actions).forEach(([action, count]) => { // cardConfig.actions est un objet qui définit les types de cartes d'action et leur quantité par couleur
-          for (let i = 0; i < count; i++) { // Object.entries() transforme cet objet en un tableau de paires [clé, valeur
+          for (let i = 0; i < count; i++) { // Object.entries() transforme cet objet en un tableau de paires [clé, valeur]
             this.cards.push(new Card(color, action));
           }
         });
@@ -76,4 +83,28 @@ class Deck {
         }
       });
     }
-};
+
+     // Mélange les cartes du paquet
+  shuffle() {
+    for (let i = this.cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+    }
+  }
+
+   // Pioche un nombre spécifié de cartes du paquet
+   draw(amount = 1) {
+    if (this.cards.length < amount) {
+      return [];
+    }
+    return this.cards.splice(0, amount);
+  }
+
+   // Méthode pour compter le nombre total de cartes
+ countCards() {
+  return this.cards.length;
+}
+}
+
+// Crée une instance du deck
+export const mainDeck = new Deck();
