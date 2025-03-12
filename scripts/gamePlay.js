@@ -2,7 +2,8 @@
 import { Card, Deck, mainDeck } from "./cards.js";
 
 /*La classe Player pour un joueur, contient un nom et une main. */
-//constructor, methode qui est appeléec automatiquement lorsque une nouvelle instance de la classe est créée avec(new Player(...))
+//constructor, methode qui est appelée automatiquement lorsque une nouvelle instance 
+// de la classe est créée avec (new Player(...))
 export class Player {
   constructor(name) {
     this.name = name;
@@ -11,17 +12,51 @@ export class Player {
   }
 
   // methode pour ajouter des cartes à la main du joueur
-  // ...cards est un opérateur de décomposition qui permet de décomposer le tableau cards en une liste d'élément individuelle
+  // ...cards est un opérateur de décomposition qui permet de décomposer le tableau cards
+  //  en une liste d'élément individuelle
   // permet d'ajouter tous les éléments du tableau en 1 ligne
   // methode permettant de piocher les cartes
-  drawCards(cards) {
-    this.hand.push(...cards);
+  drawCards(deckOrCards, amount = 1) {
+   
+    //- deckOrCards : Premier paramètre qui peut être soit un objet deck,
+    //  soit un tableau de cartes- amount = 1 : Deuxième paramètre avec une valeur par défaut de 1,
+    //  indiquant le nombre de cartes à piocher
+    let drawnCards;
+    //let drawnCards : Variable qui stockera les cartes piochées, déclarée sans valeur initiale
+    // - deckOrCards : Vérifie si le paramètre existe (n'est pas null ou undefined)
+//typeof deckOrCards.draw === 'function' : Vérifie si la propriété draw de l'objet est une fonction
+//Si les deux conditions sont vraies, on utilise la méthode draw de l'objet pour piocher des cartes
+    if (deckOrCards && typeof deckOrCards.draw === 'function') {
+      drawnCards = deckOrCards.draw(amount);
+    }
+    // Array.isArray(deckOrCards) : Fonction JavaScript qui vérifie si la valeur est un tableau
+//Si c'est un tableau, on l'utilise directement comme cartes piochées
+    else if (Array.isArray(deckOrCards)) {
+      drawnCards = deckOrCards;
+    }
+    // typeof mainDeck !== 'undefined' : Vérifie si la variable mainDeck existe
+//typeof mainDeck.draw === 'function' : Vérifie si mainDeck a une méthode draw
+//Si les deux sont vrais, on utilise mainDeck comme solution de repli
+    else if (typeof mainDeck !== 'undefined' && typeof mainDeck.draw === 'function') {
+      drawnCards = mainDeck.draw(amount);
+    }
+    // Cas d'erreur
+    //Affiche un message d'erreur dans la console et retourne un tableau vide
+    else {
+      console.error('Aucun deck valide ou cartes fournies', deckOrCards);
+      return [];
+    }
+    // this.hand.push(...drawnCards) : Ajoute les cartes piochées à la main du joueur
+    this.hand.push(...drawnCards);
+    // retourne les cartes piochées
+    return drawnCards;
   }
 
   // Joue une carte de la main du joueur si elle est jouable
   // Vérifie l'index dans la main et si la carte est jouable
   // utilise isPlayable, methode de la class Card defini dans cards.js
-  // si la carte est jouable elle est retirée de la main du joueur a l'aide de la méthode splice et retournée
+  // si la carte est jouable elle est retirée de la main du joueur 
+  // a l'aide de la méthode splice et retournée
 
   playCard(cardIndex, topCard) {
     if (cardIndex >= 0 && cardIndex < this.hand.length) {
@@ -36,14 +71,17 @@ export class Player {
   // Vérifie si le joueur a au moins une carte jouable
   // some, méthode qui teste si au moins un élément du tableau satisfait une condition donnée
   // prend une fonction de rappel (callback) en argument et retourne true ou false
-  // appell la methode isPlayable pour faire la vérification
+  // appelle la methode isPlayable pour faire la vérification
+  // peut être utilisée pour activer/désactiver des boutons ou afficher 
+  // des messages appropriés dans l'interface utilisateur.
   hasValidMove(topCard) {
     return this.hand.some((card) => card.isPlayable(topCard));
   }
 }
 
 /*La classe UnoGame, classe principale qui gère le déroulement du jeu, contient le paquet de cartes,
- la pile de défausse, les joueurs, et les méthodes pour démarrer le jeu, jouer un tour, et gérer les cartes spéciales.*/
+ la pile de défausse, les joueurs, et les méthodes pour démarrer le jeu, jouer un tour, 
+ et gérer les cartes spéciales.*/
 export class UnoGame {
   constructor(playerNames = []) {
     // condition pour vérifier que playerNames est bien un tableau
@@ -55,13 +93,14 @@ export class UnoGame {
     // discardPile contient les cartes jouées
     this.discardPile = [];
     // transforme chaque nom de joueur en une instance de la classe Player.
-    this.players = playerNames.map((name) => new Player(name));
-    this.currentPlayerIndex = 0; // index du joueur actuel dans le tableau this.players
+    this.players = playerNames.map((name) => new Player(name)); 
+    // index du joueur actuel dans le tableau this.players
+    this.currentPlayerIndex = 0;
     this.direction = 1; // 1 pour sens horaire, -1 pour anti-horaire
     this.currentColor = null; // Pour suivre la couleur actuelle
   }
 
-  // Démarre le jeu en mélangeant le paquet, distribuant les cartes, et plaçant la première carte sur la pile de défausse
+  // Démarre le jeu en mélangeant le paquet et distribuant les cartes
   start() {
     this.deck.shuffle();
 
@@ -70,20 +109,51 @@ export class UnoGame {
       player.drawCards(this.deck.draw(7));
     });
 
-    // firstCard stocke la première carte tirée du paquet.
-    // garantit que la partie commence avec une carte valide et une couleur définie
-    /* Boucle do...while
-La boucle do...while est utilisée pour s'assurer que la première carte sur la pile de défausse n'est pas une carte noire 
-La boucle continue à tirer des cartes jusqu'à ce qu'une carte non noire soit obtenue.
-*/
-    let firstCard;
-    do {
-      firstCard = this.deck.draw(1)[0];
-      this.discardPile.push(firstCard); // La carte tirée (firstCard) est ajoutée à la pile de défausse (this.discardPile).
-      this.currentColor = firstCard.color; // La propriété currentColor est mise à jour avec la couleur de la carte tirée (firstCard.color).
-    } while (firstCard.color === "black"); // Évite de commencer par une carte noire
-    this.currentColor = firstCard.color;
+    // Sélection aléatoire du joueur qui commence
+    this.currentPlayerIndex = Math.floor(Math.random() * this.players.length);
+    
+    // Retourne le joueur qui commence pour l'interface
+    return {
+      startingPlayer: this.getCurrentPlayer()
+    };
   }
+
+  // méthode pour définir la carte de départ choisie par le joueur
+  setStartingCard(cardIndex) {
+    const player = this.getCurrentPlayer();
+    
+    if (cardIndex >= 0 && cardIndex < player.hand.length) {
+      const selectedCard = player.hand[cardIndex];
+      
+      // Vérifier que la carte n'est pas noire
+      if (selectedCard.color === "black") {
+        return {
+          success: false,
+          message: "Vous ne pouvez pas commencer avec une carte noire."
+        };
+      }
+      
+      // Retirer la carte de la main du joueur
+      const card = player.hand.splice(cardIndex, 1)[0];
+      
+      // Ajouter la carte à la pile de défausse
+      this.discardPile.push(card);
+      
+      // Définir la couleur actuelle
+      this.currentColor = card.color;
+      
+      return {
+        success: true,
+        card: card
+      };
+    }
+    
+    return {
+      success: false,
+      message: "Index de carte invalide."
+    };
+  }
+  
   // Retourne le joueur actuel
   getCurrentPlayer() {
     return this.players[this.currentPlayerIndex];
@@ -100,15 +170,17 @@ La boucle continue à tirer des cartes jusqu'à ce qu'une carte non noire soit o
   // Joue un tour pour le joueur actuel
   playTurn(cardIndex, chosenColor = null) {
     const player = this.getCurrentPlayer();
-    const topCard = this.discardPile[this.discardPile.length - 1]; //  méthode vérifie si la carte peut être jouée sur la carte topCard
+    const topCard = this.discardPile[this.discardPile.length - 1]; 
     const card = player.playCard(cardIndex, topCard);
 
     if (card) {
-      // Si la carte a été jouée avec succès (card n'est pas null), elle est ajoutée à la pile de défausse.
+      // Si la carte a été jouée avec succès (card n'est pas null), 
+      // elle est ajoutée à la pile de défausse.
       this.discardPile.push(card);
 
       // Mise à jour de la couleur
-      // si la carte jouée est une carte noire, la couleur est mise à jour avec la couleur choisie par le joueur
+      // si la carte jouée est une carte noire, la couleur est mise à jour 
+      // avec la couleur choisie par le joueur
       if (card.color === "black" && chosenColor) {
         this.currentColor = chosenColor;
       } else if (card.color !== "black") {
@@ -116,7 +188,9 @@ La boucle continue à tirer des cartes jusqu'à ce qu'une carte non noire soit o
       }
       // handleSpecialCard(card) méthode qui gère les effets des cartes spéciales
       this.handleSpecialCard(card);
-      // Cette condition vérifie si la carte jouée ne fait pas partie des cartes spéciales qui empêchent le tour de passer au joueur suivant
+      // Cette condition vérifie si la carte jouée ne fait pas partie 
+      // des cartes spéciales qui empêchent le tour de passer 
+      // au joueur suivant
       if (
         ![
           "skip",
@@ -134,28 +208,14 @@ La boucle continue à tirer des cartes jusqu'à ce qu'une carte non noire soit o
     }
     return false;
   }
-  // Prompt pour choisir la couleur
-  // a revoir et gérer avec l'interface
-  promptColorChoice() {
-    const color = prompt("Choisissez une couleur (red, blue, green, yellow) :");
-    if (["red", "blue", "green", "yellow"].includes(color)) {
-      this.currentColor = color;
-      this.handleSpecialCard(this.discardPile[this.discardPile.length - 1]);
-      this.nextPlayer();
-      return true;
-    } else {
-      alert("Couleur invalide. Veuillez réessayer.");
-      this.promptColorChoice();
-      return false;
-    }
-  }
+  
   // Gère les effets des cartes spéciales
   handleSpecialCard(card) {
     const currentPlayer = this.getCurrentPlayer();
 
     switch (card.value) {
       case "reverse":
-        this.direction *= -1;
+        this.direction = -1;
         break;
 
       case "skip":
@@ -163,14 +223,41 @@ La boucle continue à tirer des cartes jusqu'à ce qu'une carte non noire soit o
         break;
 
       case "+2":
-        this.nextPlayer();
-        this.getCurrentPlayer().drawCards(this.deck.draw(2));
-        currentPlayer.hand.push(this.deck.draw(2));
-        break;
       case "+4":
+      case "Black+4Reverse":
+      case "Black+6":
+      case "Black+10":
+        // Déterminer la valeur numérique de la carte
+        let drawAmount = 0;
+        if (card.value === "+2") drawAmount = 2;
+        else if (card.value === "+4") drawAmount = 4;
+        else if (card.value === "Black+4Reverse") {
+          drawAmount = 4;
+          this.direction *= -1;
+        }
+        else if (card.value === "Black+6") drawAmount = 6;
+        else if (card.value === "Black+10") drawAmount = 10;
+        
+        // Passer au joueur suivant
         this.nextPlayer();
-        this.getCurrentPlayer().drawCards(this.deck.draw(4));
-        currentPlayer.hand.push(this.deck.draw(4));
+        
+        // Vérifier si le joueur suivant peut jouer une carte de valeur égale ou supérieure
+        const nextPlayer = this.getCurrentPlayer();
+        const hasCounterCard = nextPlayer.hand.some(c => {
+          // Extraire la valeur numérique des cartes +N
+          if (["+2", "+4", "Black+4Reverse", "Black+6", "Black+10"].includes(c.value)) {
+            const counterValue = parseInt(c.value.match(/\d+/)[0] || "0");
+            return counterValue >= drawAmount;
+          }
+          return false;
+        });
+        
+        // Si le joueur n'a pas de carte pour contrer, il pioche
+        if (!hasCounterCard) {
+          nextPlayer.drawCards(this.deck.draw(drawAmount));
+        }
+        // Sinon, l'interface devra permettre au joueur de choisir s'il joue une carte ou pioche
+        // Le traitement de ce choix sera géré dans l'interface utilisateur
         break;
 
       case "7":
@@ -184,26 +271,9 @@ La boucle continue à tirer des cartes jusqu'à ce qu'une carte non noire soit o
       case "PoserTout":
         this.handlePoserTout();
         break;
+
       case "Rejouer":
         this.handleRejouer();
-        break;
-
-      case "Black+4Reverse":
-        this.direction *= -1;
-        this.nextPlayer();
-        this.getCurrentPlayer().drawCards(this.deck.draw(4));
-        break;
-
-      case "Black+6":
-        this.nextPlayer();
-        this.getCurrentPlayer().drawCards(this.deck.draw(6));
-        currentPlayer.hand.push(this.deck.draw(6));
-        break;
-
-      case "Black+10":
-        this.nextPlayer();
-        this.getCurrentPlayer().drawCards(this.deck.draw(10));
-        currentPlayer.hand.push(this.deck.draw(10));
         break;
 
       case "ChoixCouleur":

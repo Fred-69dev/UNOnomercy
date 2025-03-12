@@ -5,51 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uno No Mercy</title>
     <link rel="stylesheet" href="styles.css">
-    <script type = "module" src="/scripts/gamePlay.js" defer></script>
-    <script type = "module" src="/scripts/unoUI.js" defer></script>
-    
+    <script type="module" src="/scripts/gamePlay.js" defer></script>
+    <!-- Make sure you only have one of these lines -->
+    <script type="module" src="/scripts/unoUI.js" defer></script>
 </head>
 <body>
     <section class="game-container">
         <h1>Uno No Mercy</h1>
-        <div id="discard-pile">
-
-        </div>
-        <div id="current-player">
-
-        </div>
-        <div id="player-hand">
-
-        </div>
-        <div id="game-log" class="log">
-
-        </div>
-        <div class="game-controls">
-            <button id="draw-button">Piocher une carte</button>
-            <button id="uno-button">Dire UNO!</button>
-        </div>
-            <!-- Modal pour le choix de couleur -->
-    <!-- <div id="color-modal" class="modal">
-        <div class="modal-content">
-            <h2>Choisissez une couleur</h2>
-            <div class="color-choices">
-                <button class="color-btn red" data-color="red">Rouge</button>
-                <button class="color-btn blue" data-color="blue">Bleu</button>
-                <button class="color-btn green" data-color="green">Vert</button>
-                <button class="color-btn yellow" data-color="yellow">Jaune</button>
+        
+        <div class="game-board">
+            <div id="other-players" class="other-players">
+                <!-- Other players will be displayed here -->
+            </div>
+            
+            <div class="center-area">
+                <div id="discard-pile" class="discard-pile">
+                    <!-- Top card will be displayed here -->
+                </div>
+                
+                <div id="deck" class="deck">
+                    <!-- Deck for drawing cards -->
+                </div>
+            </div>
+            
+            <div id="current-player" class="current-player">
+                <!-- Current player info will be displayed here -->
+            </div>
+            
+            <div id="player-hand" class="player-hand">
+                <!-- Player's cards will be displayed here -->
+            </div>
+            
+            <div class="game-controls">
+                <button id="draw-button">Piocher une carte</button>
+                <button id="uno-button">Dire UNO!</button>
+            </div>
+            
+            <div id="game-log" class="log">
+                <!-- Game log will be displayed here -->
             </div>
         </div>
-    </div> -->
 
+        <!-- Modal for player swap -->
         <div id="player-swap-modal" class="modal">
             <div class="modal-content">
                 <h2>Choisissez un joueur pour échanger vos cartes</h2>
                 <div id="player-choices" class="player-choices">
-                <!-- Les choix de joueurs seront injectés ici -->
+                    <!-- Player choices will be injected here -->
                 </div>
             </div>
         </div>
-    
+        
+        <!-- Modal for color choice -->
         <div id="color-choice-modal" class="modal">
             <div class="modal-content">
                 <h2>Choisissez une couleur</h2>
@@ -61,7 +68,6 @@
                 </div>
             </div>
         </div>
-        
     </section>
 </body>
 </html>
