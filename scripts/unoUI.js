@@ -14,7 +14,10 @@ function initializeGame() {
   
   // Afficher un message indiquant qui commence
   const gameLogElement = document.querySelector("#game-log");
-  gameLogElement.innerHTML = `<strong>Log du jeu :</strong><br>Le joueur ${startResult.startingPlayer.name} commence la partie!<br>Choisissez une carte pour commencer.`;
+  gameLogElement.innerHTML = `
+  <strong>Log du jeu :</strong><br>
+  Le joueur ${startResult.startingPlayer.name} commence la partie!<br>
+  Choisissez une carte pour commencer.`;
   
   gameStarted = true;
   updateUI();
@@ -80,7 +83,8 @@ function performCardSwap(targetPlayerIndex) {
   targetPlayer.hand = tempHand;
 
   const gameLogElement = document.querySelector("#game-log");
-  gameLogElement.innerHTML += `<br>${currentPlayer.name} échange ses cartes avec ${targetPlayer.name}!`;
+  gameLogElement.innerHTML += `
+  <br>${currentPlayer.name} échange ses cartes avec ${targetPlayer.name}!`;
 
   game.nextPlayer();
   updateUI();
@@ -100,7 +104,8 @@ function drawCard() {
       if (game.discardPile && game.discardPile.length > 0) {
         const topCard = game.discardPile[game.discardPile.length - 1];
         if (drawnCards[0].isPlayable(topCard)) {
-          if (confirm(`Voulez-vous jouer la carte ${drawnCards[0].color} ${drawnCards[0].value} que vous venez de piocher?`)) {
+          if (confirm(`Voulez-vous jouer la carte 
+            ${drawnCards[0].color} ${drawnCards[0].value} que vous venez de piocher?`)) {
             const cardIndex = player.hand.length - 1;
             handleCardClick(drawnCards[0], cardIndex);
             return;
@@ -129,7 +134,8 @@ function handleCardClick(card, index) {
     game.getCurrentPlayer().hand.splice(index, 1);
     
     const gameLogElement = document.querySelector("#game-log");
-    gameLogElement.innerHTML += `<br>${game.getCurrentPlayer().name} a commencé avec ${card.color} ${card.value}`;
+    gameLogElement.innerHTML += `
+    <br>${game.getCurrentPlayer().name} a commencé avec ${card.color} ${card.value}`;
     
     game.nextPlayer();
     updateUI();
@@ -149,7 +155,9 @@ function handleCardClick(card, index) {
     showColorChoiceModal(chosenColor => {
       if (game.playTurn(index, chosenColor)) {
         const gameLogElement = document.querySelector("#game-log");
-        gameLogElement.innerHTML += `<br>${game.players[(game.currentPlayerIndex + game.players.length - 1) % game.players.length].name} a joué ${card.value} et a choisi la couleur ${chosenColor}`;
+        gameLogElement.innerHTML += `
+        <br>${game.players[(game.currentPlayerIndex + game.players.length - 1) % game.players.length]
+          .name} a joué ${card.value} et a choisi la couleur ${chosenColor}`;
         updateUI();
       }
     });
@@ -173,7 +181,8 @@ function handleCardClick(card, index) {
   // Traitement des autres cartes
   if (game.playTurn(index)) {
     const gameLogElement = document.querySelector("#game-log");
-    const previousPlayer = game.players[(game.currentPlayerIndex + game.players.length - 1) % game.players.length].name;
+    const previousPlayer = game.players[(game.currentPlayerIndex + game.players.length - 1) % game
+      .players.length].name;
     gameLogElement.innerHTML += `<br>${previousPlayer} a joué ${card.color} ${card.value}`;
     updateUI();
   }
@@ -217,7 +226,8 @@ function updateUI() {
   const gameLogElement = document.querySelector("#game-log");
   const otherPlayersElement = document.querySelector("#other-players");
   
-  if (!discardPileElement || !currentPlayerElement || !playerHandElement || !gameLogElement || !otherPlayersElement) {
+  if (!discardPileElement || !currentPlayerElement || !playerHandElement || !gameLogElement 
+    || !otherPlayersElement) {
     console.error("UI elements not found");
     return;
   }
